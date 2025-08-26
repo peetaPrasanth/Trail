@@ -39,14 +39,14 @@ async def compare_images(
       img2_array=np.frombuffer(img2_byte,np.uint8)
       img1_cv = cv2.imdecode(img1_array,cv2.IMREAD_COLOR)
       img2_cv = cv2.imdecode(img2_array,cv2.IMREAD_COLOR)
-      if img1_cv.shape != img2_cv.shape:
+      if img1_cv.shape != img2_cv.shape:#type:ignore
          return JSONResponse(content={
             "status":"error",
             "message":"Images must be of same size"
          },status_code=400)
-      img_h,img_w = img1_cv.shape[:2]
-      gray1 = cv2.cvtColor(img1_cv,cv2.COLOR_BGR2GRAY)
-      gray2 = cv2.cvtColor(img2_cv,cv2.COLOR_BGR2GRAY)
+      img_h,img_w = img1_cv.shape[:2]#type:ignore
+      gray1 = cv2.cvtColor(img1_cv,cv2.COLOR_BGR2GRAY)#type:ignore
+      gray2 = cv2.cvtColor(img2_cv,cv2.COLOR_BGR2GRAY)#type:ignore
       diff = cv2.absdiff(gray1,gray2)
       
      
@@ -75,7 +75,7 @@ async def compare_images(
          },status_code=200)
       _,thresh = cv2.threshold(diff,0,255,cv2.THRESH_BINARY)
       coords = np.column_stack(np.where(thresh>0))
-      img2_pil = Image.fromarray(cv2.cvtColor(img2_cv, cv2.COLOR_BGR2RGB))
+      img2_pil = Image.fromarray(cv2.cvtColor(img2_cv, cv2.COLOR_BGR2RGB))#type:ignore
       draw = ImageDraw.Draw(img2_pil)
       for(y,x) in coords:
          draw.ellipse((x-1,y-1,x+1,y+1),fill=(255, 192, 203))
