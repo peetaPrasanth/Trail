@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Image Compare Tool</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    .container { max-width: 800px; margin: auto; }
+    .preview { margin-top: 20px; }
+    img { max-width: 100%; border: 1px solid #ccc; margin-top: 10px; }
+    textarea { width: 100%; height: 120px; }
+    .response-box { margin-top: 20px; padding: 10px; background: #f4f4f4; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Image Comparison Tool</h1>
+    <form id="compareForm" enctype="multipart/form-data">
+      <div>
+        <label>Upload First Image:</label><br>
+        <input type="file" name="file1" accept="image/*" required>
+      </div>
+      <br>
+      <div>
+        <label>Upload Second Image:</label><br>
+        <input type="file" name="file2" accept="image/*" required>
+      </div>
+      <br>
+      <div>
+        <label>Regions JSON (optional):</label><br>
+        <textarea name="regions" placeholder='[{"type":"ignore","x":50,"y":60,"width":100,"height":100}]'></textarea>
+      </div>
+      <br>
+      <button type="submit">Compare Images</button>
+    </form>
+
+    <div class="response-box" id="responseBox" style="display:none;"></div>
+
+    <div class="preview" id="resultPreview" style="display:none;">
+      <h2>Comparison Result:</h2>
+      <img id="resultImage" alt="Result Image">
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("compareForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(this);
+      try {
+        const response = await fetch("/compare", {
+          method: "POST",
+          body: formData
+        });
+        const data = await response.json();
+
+        // Show JSON response
+        const responseBox = document.getElementById("responseBox");
+        responseBox.style.display = "block";
+        responseBox.innerText = JSON.stringify(data, null, 2);
+
+        // Show image if exists
+        if (data.image) {
+          const imgEl = document.getElementById("resultImage");
+          imgEl.src = data.image;
+          document.getElementById("resultPreview").style.display = "block";
+        } else {
+          document.getElementById("resultPreview").style.display = "none";
+        }
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
