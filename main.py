@@ -10,6 +10,13 @@ import base64
 import json
 from enum import Enum
 from typing import List
+import uvicorn
+
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))  # fallback for local
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
 
 
 app = FastAPI()
